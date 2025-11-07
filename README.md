@@ -1,3 +1,6 @@
+![Ansible CI](https://github.com/amankothiyal04/Ansible-Autohealing-nginx/actions/workflows/ansible-ci.yml/badge.svg)
+# 🚀 Ansible Auto-Heal NGINX Deployment
+
 # 🚀 Ansible Auto-Heal NGINX Deployment
 
 This project automates the **deployment, validation, and self-healing** of NGINX web servers using **Ansible**.  

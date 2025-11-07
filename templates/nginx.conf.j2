@@ -1,0 +1,13 @@
+worker_processes auto;
+events {
+  worker_connections 1024;
+}
+http {
+  server {
+    listen {{ nginx_port }};
+    server_name {{ nginx_server_name }};
+    root {{ nginx_root }};
+    index index.html;
+  }
+}
+invalid_directive_here;

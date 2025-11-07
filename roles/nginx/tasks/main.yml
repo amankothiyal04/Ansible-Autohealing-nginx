@@ -1,0 +1,51 @@
+---
+# Install and configure NGINX
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+
+- name: Ensure web root directory exists
+  ansible.builtin.file:
+    path: "{{ nginx_root }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Create a sample index.html
+  ansible.builtin.copy:
+    dest: "{{ nginx_root }}/index.html"
+    content: "<h1>Hello from Ansible NGINX Deployment</h1>"
+    owner: www-data
+    group: www-data
+    mode: '0644'
+
+- name: Deploy nginx configuration
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    notify: Restart nginx
+
+- name: Ensure nginx is running and enabled on boot
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: yes
+
+    
+- name: Send success email
+  mail:
+    host: "{{ smtp_host }}"
+    port: "{{ smtp_port }}"
+    username: "{{ smtp_username }}"
+    password: "{{ smtp_password }}"
+    to: "{{ receiver_email }}"
+    from: "{{ sender_email }}"
+    subject: "NGINX Deployment Successful"
+    body: "Nginx was successfully deployed on {{ inventory_hostname }} via Ansible"

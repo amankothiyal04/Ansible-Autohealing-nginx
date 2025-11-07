@@ -1,0 +1,84 @@
+---
+- hosts: all
+  become: yes
+
+  vars_files:
+    - ses_credentials.yml
+
+  roles:
+    - nginx
+
+  tasks:
+    - name: Deploy and validate NGINX
+      block:
+
+        - name: Backup existing nginx configuration
+          ansible.builtin.copy:
+            src: /etc/nginx/nginx.conf
+            dest: /etc/nginx/nginx.conf.bak
+            remote_src: yes
+            backup: yes
+
+        - name: Apply nginx configuration from template
+          ansible.builtin.template:
+            src:  nginx.conf.j2
+            dest: /etc/nginx/nginx.conf
+        
+        - name: Reload systemd daemon
+          ansible.builtin.command: systemctl daemon-reload
+
+        - name: Restart nginx to apply changes
+          ansible.builtin.service:
+            name: nginx
+            state: restarted
+
+        - name: Wait for NGINX port to open
+          ansible.builtin.wait_for:
+            port: "{{ nginx_port }}"
+            timeout: 20
+
+        - name: Check if NGINX is serving HTTP 200
+          ansible.builtin.uri:
+            url: http://localhost
+            status_code: 200
+          register: health_check
+
+        - name: Send the success mail
+          mail:
+            host: "{{ smtp_host }}"
+            port: "{{ smtp_port }}"
+            username: "{{ smtp_username }}"
+            password: "{{ smtp_password }}"
+            to: "{{ receiver_email }}"
+            from: "{{ sender_email }}"
+            subject: "NGINX Deployment and Validation Successful"
+            body: "Health check passed on {{ inventory_hostname }}"
+
+      rescue:
+
+        - name: Restore backup configuration
+          ansible.builtin.copy:
+            src: /etc/nginx/nginx.conf.bak
+            dest: /etc/nginx/nginx.conf
+            remote_src: yes
+
+
+        - name: Reload systemd daemon after rollback
+          ansible.builtin.command: systemctl daemon-reload
+
+        - name: Restart nginx after rollback
+          ansible.builtin.service:
+            name: nginx
+            state: restarted
+        
+
+        - name: Send the failure mail
+          mail:
+            host: "{{ smtp_host }}"
+            port: "{{ smtp_port }}"
+            username: "{{ smtp_username }}"
+            password: "{{ smtp_password }}"
+            to: "{{ receiver_email }}"
+            from: "{{ sender_email }}"
+            subject: "NGINX Deployment or Validation Failed"
+            body: "Rollback applied on {{ inventory_hostname }} due to health check failure."

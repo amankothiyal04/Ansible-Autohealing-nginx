@@ -1,0 +1,14 @@
+plugin: amazon.aws.aws_ec2
+
+regions:
+  - us-west-1
+
+filters:
+  "tag:App":
+    - nginx
+
+hostnames:
+  - private_ip_address
+
+compose:
+  ansible_host: private_ip_address

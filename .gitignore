@@ -1,0 +1,14 @@
+# Sensitive files
+*.pem
+*.vault
+*.zip
+ses_credentials.yml
+vault_pass.txt
+
+# System and temporary
+__pycache__/
+*.retry
+*.log
+*.out
+.env
+.DS_Store

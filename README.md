@@ -18,6 +18,7 @@ It includes email notifications (via AWS SES) for both **successful deployments*
 
 ## 🏗️ Project Structure
 ansible-autoheal-nginx/
+
 ├── ansible.cfg
 ├── aws_ec2.yml
 ├── deploy.yml

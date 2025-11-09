@@ -1,13 +1,9 @@
 ![Ansible CI](https://github.com/amankothiyal04/Ansible-Autohealing-nginx/actions/workflows/ansible-ci.yml/badge.svg)
 # 🚀 Ansible Auto-Heal NGINX Deployment
 
-# 🚀 Ansible Auto-Heal NGINX Deployment
-
 This project automates the **deployment, validation, and self-healing** of NGINX web servers using **Ansible**.  
 It includes email notifications (via AWS SES) for both **successful deployments** and **failure rollbacks** — ensuring reliability and visibility in production environments.
-
 ---
-
 ## 🧠 Features
 
 - ✅ Dynamic Inventory using AWS EC2 plugin  
